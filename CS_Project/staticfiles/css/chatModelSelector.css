@@ -1,0 +1,53 @@
+/* chatModelSelector.css */
+
+.model-selector-wrapper {
+    position: relative;
+    /* 確保只有右側有間距，讓它貼近 input-container */
+    margin-right: 10px; /* "+" 按鈕與輸入框之間的距離 */
+    margin-bottom: 0; /* 確保與 input-area 底部對齊 */
+    /* 移除原本的 margin: 0 10px 10px; */
+}
+
+/* "+" 按鈕樣式 */
+.model-toggle-btn {
+    background-color: rgb(100, 184, 203);
+    color: white;
+    border: none;
+    padding: 11px 14px;
+    border-radius: 4px;
+    font-size: 16px;
+    transform: translateY(-7%); 
+    cursor: pointer;
+    position: relative;
+    z-index: 5;
+}
+
+.model-toggle-btn:hover {
+    background-color: rgb(79, 158, 176);
+}
+
+/* 跳出式選單樣式 */
+.model-popup-menu {
+    display: none;
+    position: absolute;
+    bottom: 35px; /* 改為 bottom，讓它出現在按鈕上方 */
+    left: 0;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    white-space: nowrap;
+}
+
+.model-popup-menu label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.model-popup-menu input[type="radio"] {
+    margin-right: 6px;
+}
+

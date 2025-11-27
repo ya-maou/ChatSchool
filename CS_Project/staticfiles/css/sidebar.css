@@ -1,0 +1,89 @@
+/* sidebar.css */
+
+.sidebar {
+    position: fixed;
+    top: 0px;
+    left: -350px;
+    width: 305px;
+    height: 100%;
+    background: rgba(195, 255, 255, 0.453);
+    transition: left 0.3s ease;
+    padding: 20px 10px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    border-right: 2px solid white;
+    z-index: 998;
+}
+
+.sidebar.show {
+    left: 0;
+}
+
+.sidebar-icons {
+    display: flex;
+    justify-content: flex-end; /* 靠右對齊 */
+    gap: 10px;  
+    margin: 0px 0px 20px; 
+    padding: 0 10px;
+}
+  
+  /* 圖示按鈕共用樣式 */
+  .icon-btn {
+    width: 40px;             /* 固定寬度 */
+    height: 40px;            /* 同樣高度，變成正方形 */
+    font-size:20px;         /* 裡面圖示放大 */
+    display: flex;           /* 置中用 */
+    align-items: center;     /* 垂直置中 */
+    justify-content: center; /* 水平置中 */
+    background-color: rgb(68, 113, 135);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1), 0 0 20px rgba(118, 138, 208, 0.15); /* 更精細的陰影模糊效果 */
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    border-radius: 5px;      
+    color: white;
+}
+.icon-btn:hover {
+    transform: scale(1.2);
+}
+
+/* 模糊效果 */
+.sidebar.blurred {
+    filter: blur(2px);
+    opacity: 0.6;
+    pointer-events: none;
+    background-color: rgb(20, 38, 47);
+}
+
+.floating-banner {
+    top: 200px;
+    position: fixed;
+    color: #ffffff;
+    padding: 8px 16px;
+    transition: left 0.3s ease;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    font-size: 24px;  
+}
+.floating-banner-2 {
+    top: 250px;
+    position: fixed;
+    color: #ffffff;
+    padding: 8px 16px;
+    transition: left 0.3s ease;
+    z-index: 2001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    font-size: 18px;  
+}
+
+#login-banner {
+    left: -200px;
+}
+#login-banner-2 {
+    left: -500px;
+}

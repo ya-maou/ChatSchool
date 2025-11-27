@@ -1,0 +1,104 @@
+.chat-history {
+    color: white;
+    border-radius: 8px;
+    padding: 0;
+    margin: 0;
+}
+
+/* 對應每一則聊天紀錄項目 */
+.chat-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-entry a {
+    flex-grow: 1;         /* 填滿剩餘空間 */
+    display: block;
+    padding: 8px 20px;
+    font-size: 18px;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.081);
+    text-decoration: none;
+    color: #eee;
+    transition: background-color 0.3s ease, color 0.3s ease, border 0.3s ease; 
+    margin-right: 8px;     /* 跟垃圾桶有間距 */
+    white-space: nowrap;   /* 避免換行，可視情況調整 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chat-entry a:hover {
+    
+    background-color: #3c7084a9;
+    border: 1px solid white;
+}
+
+/* 若需要控制最後一個 entry 的 margin 可加 */
+.chat-entry:last-child {
+    margin-bottom: 0;
+}
+
+.add-chat-btn {
+    background-color: transparent;
+    color: white;
+    font-size: 24px;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.add-chat-btn:hover {
+    color: #6cfffa;
+}
+
+/* 包住整個區塊，限制最大寬度 */
+.chat-history-container {
+    max-width: 220px; /* 可依實際 sidebar 寬度調整 */
+    margin: 0 auto;
+}
+
+/* Header：讓 Chat History 和 + 按鈕並排 */
+.chat-history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 0 4px;
+}
+
+.chat-history-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    margin: 0;
+}
+
+/* 按鈕樣式 */
+.add-chat-btn {
+    background-color: transparent;
+    color: white;
+    font-size: 20px;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    padding: 2px 8px;
+}
+
+/* 假設這在 sidebar.css 裡 */
+.chat-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.delete-chat-btn {
+    background: none;
+    border: none;
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    font-size: 16px;     /* 縮小一點較符合比例 */
+    padding: 8px;
+    line-height: 1;
+}
+

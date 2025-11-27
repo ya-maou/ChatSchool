@@ -1,0 +1,101 @@
+{% extends 'sidebar.html' %}
+{% load static %}
+
+{% block title %}指引 | ChatSchool{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/guide.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="guide-container">
+    <div class="guide-content">
+        <h1>ChatSchool 使用指引</h1>
+
+        <!-- PDF 渲染容器 -->
+        <div id="pdf-viewer" class="pdf-viewer-container"></div>
+
+        <!-- 翻頁控制 -->
+        <div class="pdf-controls">
+            <button id="prev-page">上一頁</button>
+            <span id="page-info">第 0 頁 / 共 0 頁</span>
+            <button id="next-page">下一頁</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+const url = "{% static 'pdf/guide.pdf' %}";
+const pdfjsLib = window['pdfjs-dist/build/pdf'];
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+const container = document.getElementById('pdf-viewer');
+const pageInfo = document.getElementById('page-info');
+const prevBtn = document.getElementById('prev-page');
+const nextBtn = document.getElementById('next-page');
+
+let pdfDoc = null;
+let currentPage = 1;
+let totalPages = 0;
+let canvas = document.createElement('canvas');
+let context = canvas.getContext('2d');
+container.appendChild(canvas);
+
+// 載入 PDF
+pdfjsLib.getDocument(url).promise.then(pdf => {
+    pdfDoc = pdf;
+    totalPages = pdf.numPages;
+    renderPage(currentPage);
+});
+
+// 渲染指定頁
+function renderPage(pageNum) {
+    pdfDoc.getPage(pageNum).then(page => {
+        const viewport = page.getViewport({ scale: 0.8 });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        page.render({ canvasContext: context, viewport: viewport });
+        pageInfo.textContent = `第 ${currentPage} 頁 / 共 ${totalPages} 頁`;
+
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === totalPages;
+    });
+}
+
+// 翻頁按鈕
+prevBtn.addEventListener('click', () => {
+    if (currentPage <= 1) return;
+    currentPage--;
+    renderPage(currentPage);
+});
+
+nextBtn.addEventListener('click', () => {
+    if (currentPage >= totalPages) return;
+    currentPage++;
+    renderPage(currentPage);
+});
+
+// 側邊欄點擊跳頁
+document.querySelectorAll('#guide-catalog a').forEach(link => {
+    link.addEventListener('click', e => {
+        e.preventDefault();
+        const pageMap = {
+            "登入系統": 1,
+            "主畫面介紹": 3,
+            "設定介紹": 6,
+            "行事曆介紹": 7,
+            "意見回饋": 10
+        };
+        const section = link.textContent.trim();
+        if (pdfDoc && pageMap[section]) {
+            currentPage = pageMap[section];
+            renderPage(currentPage);
+        }
+    });
+});
+</script>
+{% endblock %}

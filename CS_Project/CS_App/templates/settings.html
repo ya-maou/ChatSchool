@@ -1,0 +1,313 @@
+{% extends 'sidebar.html' %}
+{% load static %}
+
+{% block title %}帳號設定 | ChatSchool{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/settings.css' %}">
+<link rel="stylesheet" href="{% static 'css/calendar.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+  <h2>帳號設定</h2>
+
+  {% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  {# 1) Gmail（不可變更） #}
+  <div class="setting-item" id="row-email">
+    <label class="setting-label" for="email">Gmail（不可變更）</label>
+    <input id="email" type="email" class="setting-z form-control" value="{{ user.email }}" disabled>
+    <div></div>
+  </div>
+
+  {# 2) Username：預設鎖定，按「編輯」才可修改；需輸入原密碼驗證 #}
+  <form id="username-form" action="{% url 'update_settings' %}" method="post" class="mb-0">
+    {% csrf_token %}
+    <input type="hidden" name="scope" value="username">
+    <div class="setting-item" id="row-username">
+      <label class="setting-label" for="username-input">Username</label>
+      <input id="username-input" type="text" name="username" class="setting-input form-control"
+             value="{{ user.username }}" disabled data-original="{{ user.username }}">
+      <button type="button" class="edit-btn" data-target="username" title="編輯">
+        <i class="bi bi-pencil"></i>
+      </button>
+      <div class="inline-actions" id="username-actions">
+        <button type="submit" class="save-btn" title="儲存">
+          <i class="bi bi-save"></i>
+        </button>
+        <button type="button" class="cancel-btn" data-target="username" title="取消">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="verify-block" id="username-verify">
+      <div class="setting-item" style="grid-template-columns: 180px 1fr;">
+        <label class="setting-label" for="username-current-password">請輸入原密碼</label>
+        <div class="password-wrapper">
+          <input id="username-current-password" type="password" name="current_password"
+                 class="setting-input form-control" placeholder="為了安全，變更前請驗證身分">
+          <i class="bi bi-eye-slash toggle-password" onclick="togglePasswordVisibility('username-current-password', this)"></i>
+          <a href="#" class="forgot-password-inline" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">忘記密碼？</a>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  {# 3) Password：按「編輯」後才顯示新密碼欄與驗證原密碼 #}
+  <form id="password-form" action="{% url 'update_settings' %}" method="post" class="mb-0">
+    {% csrf_token %}
+    <input type="hidden" name="scope" value="password">
+      <div class="setting-item" id="row-password">
+        <label class="setting-label">Password</label>
+
+        <input type="password" class="setting-input form-control view-mode" value="********" disabled>
+
+        <div class="password-wrapper edit-mode">
+          <input id="new-password" type="password" name="new_password" class="setting-input form-control" placeholder="請輸入新密碼">
+          <i class="bi bi-eye-slash toggle-password" onclick="togglePasswordVisibility('new-password', this)"></i>
+        </div>
+
+        <button type="button" class="edit-btn" data-target="password" title="編輯">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <div class="inline-actions" id="password-actions">
+          <button type="submit" class="save-btn" title="儲存">
+            <i class="bi bi-save"></i>
+          </button>
+          <button type="button" class="cancel-btn" data-target="password" title="取消">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+      </div>
+    <div class="verify-block" id="password-edit-block">
+      <div class="setting-item" style="grid-template-columns: 180px 1fr;">
+        <label class="setting-label" for="password-current">請輸入原密碼</label>
+        <div class="password-wrapper">
+          <input id="password-current" type="password" name="current_password" class="setting-input form-control" placeholder="為了安全，變更前請驗證身分">
+          <i class="bi bi-eye-slash toggle-password" onclick="togglePasswordVisibility('password-current', this)"></i>
+          <a href="#" class="forgot-password-inline" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">忘記密碼？</a>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="action-buttons">
+    <form action="{% url 'delete_account' %}" method="post">
+      {% csrf_token %}
+      <button type="submit" class="delete-btn" title="刪除帳號" aria-label="刪除帳號">
+        <i class="bi bi-trash"></i>
+      </button>
+    </form>
+    <form action="{% url 'logout' %}" method="post">
+      {% csrf_token %}
+      <button type="submit" class="logout-btn" title="登出" aria-label="登出">
+        <i class="bi bi-box-arrow-right"></i>
+      </button>
+    </form>
+  </div>
+</div>
+
+{# 忘記密碼 Modal：沿用你的版本 #}
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="forgotPasswordModalLabel">重設密碼</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="forgot-password-form">
+          <div class="mb-3">
+            <label for="forgot-email" class="form-label">Gmail：</label>
+            <input type="email" class="form-control" id="forgot-email" value="{{ user.email }}" disabled>
+            <input type="hidden" name="email" value="{{ user.email }}">
+          </div>
+          <div class="mb-3">
+            <label for="forgot-verification-code" class="form-label">驗證碼：</label>
+            <div class="input-group">
+              <input type="text" class="form-control" id="forgot-verification-code">
+              <button class="btn btn-outline-secondary" type="button" id="send-forgot-code-btn">發送驗證碼</button>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="new-password-forgot" class="form-label">新密碼：</label>
+            <div class="position-relative">
+              <input type="password" class="form-control" id="new-password-forgot" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">重設密碼</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // 顯示/隱藏密碼
+  function togglePasswordVisibility(id, icon) {
+    const pw = document.getElementById(id);
+    if (!pw) return;
+    if (pw.type === "password") {
+      pw.type = "text";
+      icon.classList.replace("bi-eye-slash", "bi-eye");
+    } else {
+      pw.type = "password";
+      icon.classList.replace("bi-eye", "bi-eye-slash");
+    }
+  }
+
+  // 編輯模式
+  function enterEdit(section) {
+    const row = document.getElementById('row-' + section);
+    row.classList.add('editing');
+    row.querySelector('.edit-btn').style.display = 'none';
+    document.getElementById(section + '-actions').classList.add('show');
+
+    if (section === 'username') {
+      document.getElementById('username-input').disabled = false;
+      document.getElementById('username-verify').classList.add('show');
+      document.getElementById('username-current-password').focus();
+    }
+    if (section === 'password') {
+      row.querySelector('.view-mode').style.display = 'none';
+      row.querySelector('.edit-mode').style.display = 'flex';
+      document.getElementById('password-edit-block').classList.add('show');
+      document.getElementById('new-password').focus();
+    }
+  }
+
+  // 取消編輯
+  function cancelEdit(section) {
+    const row = document.getElementById('row-' + section);
+    row.classList.remove('editing');
+    row.querySelector('.edit-btn').style.display = '';
+    document.getElementById(section + '-actions').classList.remove('show');
+
+    if (section === 'username') {
+      const input = document.getElementById('username-input');
+      input.value = input.dataset.original;
+      input.disabled = true;
+      document.getElementById('username-verify').classList.remove('show');
+      document.getElementById('username-current-password').value = '';
+    }
+    if (section === 'password') {
+      row.querySelector('.view-mode').style.display = 'block';
+      row.querySelector('.edit-mode').style.display = 'none';
+      document.getElementById('password-edit-block').classList.remove('show');
+      document.getElementById('new-password').value = '';
+      document.getElementById('password-current').value = '';
+    }
+  }
+
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => enterEdit(btn.dataset.target));
+  });
+  document.querySelectorAll('.cancel-btn').forEach(btn => {
+    btn.addEventListener('click', () => cancelEdit(btn.dataset.target));
+  });
+
+  // 提交 AJAX
+  function submitSetting(section) {
+    let payload = { scope: section };
+
+    if (section === 'username') {
+      payload.username = document.getElementById('username-input').value.trim();
+      payload.current_password = document.getElementById('username-current-password').value.trim();
+      if (!payload.username || !payload.current_password) { alert('請完整填寫欄位'); return; }
+    }
+    if (section === 'password') {
+      payload.new_password = document.getElementById('new-password').value.trim();
+      payload.current_password = document.getElementById('password-current').value.trim();
+      if (!payload.new_password || !payload.current_password) { alert('請完整填寫欄位'); return; }
+    }
+
+    fetch('{% url "update_settings" %}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        alert(data.message);
+        cancelEdit(section);
+        window.location.reload();
+        if (section === 'username') {
+          document.getElementById('username-input').dataset.original = payload.username;
+        }
+        if (section === 'password') {
+          document.getElementById('password-current').value = '';
+          document.getElementById('new-password').value = '';
+        }
+      } else {
+        alert('更新失敗：' + data.message);
+      }
+    })
+    .catch(err => {
+      console.error('更新設定失敗:', err);
+      alert('更新設定時發生錯誤。');
+    });
+  }
+
+  // *** 核心修改部分：將事件監聽器從按鈕改為表單，並阻止預設行為 ***
+  document.getElementById('username-form').addEventListener('submit', function(event) {
+      event.preventDefault(); // 阻止頁面重新導向
+      submitSetting('username');
+  });
+  document.getElementById('password-form').addEventListener('submit', function(event) {
+      event.preventDefault(); // 阻止頁面重新導向
+      submitSetting('password');
+  });
+
+  // 忘記密碼
+  document.getElementById('send-forgot-code-btn').addEventListener('click', function() {
+    const email = document.getElementById('forgot-email').value.trim();
+    if (!email) { alert('請輸入電子郵件'); return; }
+    fetch('{% url "forgot_password" %}', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+      body: JSON.stringify({ email })
+    })
+    .then(r => r.json())
+    .then(data => {
+      alert(data.message);
+    })
+    .catch(err => { console.error(err); alert('發送驗證碼失敗'); });
+  });
+
+  document.getElementById('forgot-password-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    const email = document.getElementById('forgot-email').value.trim();
+    const code = document.getElementById('forgot-verification-code').value.trim();
+    const newPassword = document.getElementById('new-password-forgot').value.trim();
+    if (!email || !code || !newPassword) { alert('所有欄位都是必填的'); return; }
+    fetch('{% url "forgot_password" %}', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+      body: JSON.stringify({ email, verification_code: code, new_password: newPassword })
+    })
+    .then(r => r.json())
+    .then(data => {
+      alert(data.message);
+      if (data.success) {
+        bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal')).hide();
+      }
+    })
+    .catch(err => { console.error(err); alert('重設密碼失敗'); });
+  });
+</script>
+
+{% endblock %}

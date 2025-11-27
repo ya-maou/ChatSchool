@@ -1,0 +1,284 @@
+/* ========== 基本佈局與滾動修正 ========== */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* 防止 body 滾動，將滾動交給 main-content 控制 */
+}
+
+.main-content {
+    height: 100vh;
+    width: 100%;
+    margin-left: 0;
+    overflow-y: auto;
+    transition: transform 0.3s ease, width 0.3s ease;
+
+    /* 捲軸樣式 */
+    scrollbar-width: thin;              /* Firefox */
+    scrollbar-color: #ccc transparent;  /* Firefox */
+}
+
+.main-content::-webkit-scrollbar {
+    width: 8px;
+}
+.main-content::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+.main-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* ========== 行事曆外框 ========== */
+.calendar-wrapper {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    padding: 1rem;
+    background: rgba(232, 255, 255, 0.85);
+    margin: 2rem auto;
+    width: 80%;
+    backdrop-filter: blur(8px);
+}
+@media (max-width: 768px) {
+    .calendar-wrapper {
+        padding: 0.5rem;
+    }
+}
+
+/* ========== 表格樣式 ========== */
+.table {
+    --bs-table-bg: rgba(255, 255, 255, 0.0);
+    table-layout: fixed;
+    width: 100%;
+    --bs-table-border-color: #ffffff;
+}
+.table td {
+    border: 2px solid #ffffff !important;
+    height: 100px;
+    vertical-align: top;
+    padding: 8px;
+    transition: background-color 0.2s ease;
+}
+.table th {
+    border: 2px solid #3d7483 !important;
+}
+thead.table-danger {
+    --bs-table-bg: #5a9caf;
+    --bs-table-color: #ffffff;
+    --bs-table-border-color: #3d7483;
+}
+.table-danger {
+    --bs-table-bg: #77c0cd;
+    --bs-table-color: #833535;
+    --bs-table-border-color: #6a96e6;
+    --bs-table-striped-bg: #98c2ff;
+    --bs-table-active-bg: #3d7483;
+    --bs-table-hover-bg: #74a4f0;
+    color: var(--bs-table-color);
+    background-color: var(--bs-table-bg);
+}
+td:hover:not(.today) {
+    background-color: rgba(248, 253, 255, 0.8);
+}
+td small {
+    font-size: 12px;
+    color: #ffffff;
+}
+
+/* ========== 今日日期樣式 ========== */
+#calendar-body .today {
+    background-color: #6ddfd846;
+    border: 2px solid #86dcdcc1;
+    color: #000;
+}
+#calendar-body .today.weekend {
+    background-color: #e0fcfb;
+    border: 2px solid #6cbaba;
+}
+#calendar-body .today:hover {
+    background-color: #35a1ad58;
+    border: 2px solid #96dcdc;
+}
+
+/* ========== 自訂事件樣式 ========== */
+.custom-event {
+    font-size: 0.75rem;
+    color: #3d7483;
+    cursor: pointer;
+    background-color: #e6faff;
+    border: 1px solid #a9ece6;
+    border-radius: 4px;
+    padding: 4px 6px;
+    margin-top: 4px;
+    text-align: left;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+.custom-event:hover {
+    color: #e6faff;
+    background-color: #5a9caf;
+}
+
+/* ========== Bootstrap 按鈕客製化 ========== */
+.btn-outline-secondary {
+    --bs-btn-color: #5084b3;
+    --bs-btn-border-color: #6c757d;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #416c91;
+    --bs-btn-hover-border-color: #6c757d;
+    --bs-btn-focus-shadow-rgb: 108, 117, 125;
+    --bs-btn-active-bg: #6c757d;
+    --bs-btn-active-border-color: #6c757d;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #6c757d;
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: #6c757d;
+    --bs-gradient: none;
+}
+
+/* ========== 模態框與側邊欄 Z-index 修正 ========== */
+.modal {
+    z-index: 1055 !important;
+}
+.modal-content {
+    background-color: #fff;
+    margin: 0%;
+    padding: 20px 30px;
+    border-radius: 8px;
+    width: 800px;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.modal-backdrop {
+    position: fixed;
+    z-index: 1050 !important;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+#sidebar {
+    position: fixed;
+    z-index: 998;
+}
+
+.modal-dialog {
+  display: flex;
+  align-items: flex-start;   /* <- 由 center 改為 flex-start，使兩者頂端對齊 */
+  justify-content: center;
+  gap: 12px;
+  max-width: calc(100% - 2rem);
+  padding: 0;
+  margin-top: 230px;
+  box-sizing: border-box;
+}
+
+/* 把 actions 變成 modal-content 的兄弟元素（靠右緊貼） */
+.modal-actions-outside {
+  
+  position: relative;        /* 不再絕對定位 */
+  align-items: flex-start;
+  margin-left: 6px;          /* 與 modal-content 的間距（可調為 0 以緊貼） */
+  display: flex;
+  flex-direction: column;    /* 垂直排列按鈕 */
+  align-items: center;
+  gap: 8px;
+  z-index: 1200;
+  pointer-events: auto;
+  /* 確保 actions 不會改變 modal 寬度（只佔自身空間） */
+  flex-shrink: 0;
+}
+
+/* icon-only 按鈕外觀（保留你要求的白色圖示與 hover） */
+.modal-actions-outside .modal-action-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  background: transparent;
+  background-color: #ffffff30;
+  border: 2px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, transform 120ms ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  padding: 0;
+}
+
+.modal-actions-outside .modal-action-btn i.bi {
+  font-size: 18px;
+  color: #fff; /* 預設白色圖示 */
+  transition: color 160ms ease, transform 120ms ease;
+}
+
+.modal-actions-outside .modal-action-btn:hover {
+  background: rgba(255,255,255,0.5);
+  border-color: rgba(255,255,255,1);
+  transform: translateY(-2px);
+}
+.modal-actions-outside .modal-action-btn:hover i.bi {
+  color: #222;
+}
+
+.modal-actions-outside .modal-action-btn:focus {
+  outline: 3px solid rgba(255,255,255,0.35);
+  outline-offset: 2px;
+}
+
+/* 關閉按鈕的尺寸 */
+.modal-actions-outside .modal-close-outside {
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+}
+
+/* ========== 響應式：窄螢幕把 actions 放回 modal 內容底部 ==========
+   小螢幕時 modal 會變成垂直堆疊，actions 置於下方並水平排列 */
+@media (max-width: 768px) {
+  .modal-dialog {
+    flex-direction: column;  /* 內容垂直堆疊 */
+    align-items: stretch;
+  }
+
+  .modal-actions-outside {
+    position: static;
+    margin-left: 0;
+    margin-top: 12px;
+    flex-direction: row;      /* 按鈕水平排列 */
+    justify-content: center;
+    gap: 8px;
+    order: 2;                 /* 放在 modal-content 之後 */
+  }
+
+  .modal-content {
+    width: auto;              /* 允許 modal 自適應寬度 */
+    margin: 0 12px;
+  }
+
+  .modal-body { padding-right: 20px; }
+}
+
+
+.reminder-btn {
+    /* 移除所有預設的按鈕樣式 */
+    background: none;
+    border: none;
+    padding: 0;
+    margin-right: 2px;
+    cursor: pointer;
+    line-height: 1;
+    
+    /* 新增此行以放大圖示 */
+    font-size: 1.25rem; /* 預設為 1rem，此處設定為 1.25 倍大小 */
+    
+    /* 設定圖示的預設顏色 */
+    color: #ffffff;
+    transition: color 0.2s ease-in-out;
+}
+
+/* 滑鼠移過去時的樣式 */
+.reminder-btn:hover {
+    color: #1c7993;
+}
+
+/* 如果您希望點擊時有效果，也可以新增 active 樣式 */
+.reminder-btn:active {
+    color: #61c4c8;
+}

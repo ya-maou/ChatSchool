@@ -1,0 +1,96 @@
+/* 相關連結按鈕 */
+.related-links-icon-btn {
+    margin-right: 2px;
+    margin-bottom: 1px;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+
+    color: #ffffff;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.related-links-icon-btn:hover {
+    color: #bbfff3;
+    transform: scale(1.1);
+}
+
+/* 標題樣式 */
+.links-title {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #333;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+/* 新增：用於包裹模型名稱和按鈕的容器 */
+.message-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+/* 確保浮動連結容器的定位是相對於整個視窗，而不是父容器 */
+.related-links-wrapper {
+    position: relative;
+}
+
+/* 浮動連結容器（預設隱藏）- 修正與優化版本 */
+.floating-links-container {
+    display: none;
+    position: absolute; /* 將定位從 fixed 改為 absolute */
+    left: 0; 
+    bottom: 30%; /* 將視窗的頂部放在父容器的底部 */
+    margin-left: 40px; /* 增加一點點間距 */
+    
+    background-color: rgba(255, 255, 255, 0.96);
+    border: 2px solid #ccc;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    z-index: 1000;
+    width: 500px;
+    max-width: 90vw;
+    padding: 20px;
+    flex-direction: column;
+    gap: 15px;
+    
+    /* 確保整個浮動容器自身是可滾動的 */
+    max-height: 80vh; /* 設置一個相對於視窗高度的最大值 */
+    overflow-y: auto; /* 整個浮動容器都可以滾動 */
+}
+
+/* 當有 .show class 時，顯示浮動視窗 */
+.floating-links-container.show {
+    display: flex;
+}
+
+/* 每個連結的樣式 */
+.related-link-item {
+    min-height: 40px;
+    display: block;
+    background-color: #97dbe01a;
+    padding: 10px;
+    border-radius: 3px;
+    text-decoration: none;
+    color: #1f9ea0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background-color 0.2s ease;
+    border: 3px solid rgba(255, 255, 255, 0.899);
+}
+
+.related-link-item:hover {
+    background-color: #4e979ff2;
+    color: #d3feff;
+}

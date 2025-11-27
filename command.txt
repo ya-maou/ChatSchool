@@ -1,0 +1,31 @@
+1. 
+.\ChatSchool310\Scripts\Activate.ps1
+
+--------------------------
+
+python CS_Project/manage.py makemigrations
+python CS_Project/manage.py migrate
+
+python CS_Project/manage.py runserver 0.0.0.0:8000
+
+-----------------------------
+
+2. python CS_Project/manage.py process_tasks
+3. sudo nginx -t
+4. gunicorn CS_Project.wsgi:application --bind 0.0.0.0:8000
+
+-----------------------------
+
+sudo nano /etc/nginx/sites-available/CS_Project
+
+python CS_Project/manage.py collectstatic
+
+sudo systemctl restart nginx
+
+ngrok config add-authtoken -
+ngrok http 8000
+
+-------------------------
+/home/user/Studio/114-FinalProject-TeamB/CS_Project/staticfiles
+
+ps aux | grep python

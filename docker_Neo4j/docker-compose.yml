@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  weaviate:
+    image: cr.weaviate.io/semitechnologies/weaviate:1.31.3
+    ports:
+      - "8080:8080"
+      - "50051:50051"
+    environment:
+      QUERY_DEFAULTS_LIMIT: 25
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+      ENABLE_MODULES: 'generative-google'
+      ENABLE_API_BASED_MODULES: 'true'
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      USE_GOOGLE_AUTH: 'true'
+      GOOGLE_PROJECT_ID: 'parabolic-clock-464505-g1'
+      GOOGLE_APPLICATION_CREDENTIALS: '/etc/weaviate/google_credentials.json'
+      CLUSTER_HOSTNAME: ''        
+    volumes:
+      - C:\Users\User\Desktop\nuu_rag\credentials\weaviate-gemini-sa.json:/etc/weaviate/google_credentials.json:ro
+      - C:\Users\User\Desktop\nuu_rag\data:/var/lib/weaviate
+    restart: on-failure

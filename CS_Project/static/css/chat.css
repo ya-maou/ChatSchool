@@ -1,0 +1,529 @@
+/*chat.css */
+
+body {
+    margin: 0;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-image:
+      radial-gradient(rgba(255,255,255,0.2) 1px, transparent 1px),
+      linear-gradient(0deg, #6d9b9b, #213242);
+    background-size: 20px 20px, cover;
+    background-repeat: repeat, no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    overflow: hidden;
+}
+#cursor-light {
+    position: fixed;
+    width: 500%;
+    height: 500%;
+    pointer-events: none;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(150, 255, 251, 0.214), transparent 20%);
+    transform: translate(-50%, -50%);
+    transition: left 1.5s ease-out, top 0.4s ease-out;
+    z-index: 0;
+    left: -500px; 
+    top: -500px;
+  }
+.chat-box 
+{
+    width: 65%;
+    margin: 200px auto;
+    background: transparent;
+    padding: 30px;
+    border-radius: 10px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column; 
+    overflow-y: auto; 
+    font-size: 18px;                
+    margin-bottom: 100px; 
+    gap: 24px; 
+}
+.message {
+    display: inline-block;    
+    padding: 12px 10px;
+    line-height: 1.1;
+    border-radius: 5px;
+    width: auto; 
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+    border: 2px solid white;
+    word-wrap: break-word; 
+    white-space: pre-wrap;
+    z-index: 1;
+    margin: 0; 
+}
+
+ul {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.user-message {
+    background: rgba(245, 247, 246, 0.9);
+    text-align: right;
+    margin-left: auto;
+    margin-right: 0; 
+}
+
+.bot-message {
+    background: rgba(245, 247, 246, 0.9);
+    text-align: left;
+    margin-right: auto;
+    margin-left: 0;
+}
+
+.message p {
+    margin: 0;
+    padding: 0;
+}
+
+#messages {
+    flex-grow: unset;
+    overflow-y: visible;
+    max-height: unset;
+}
+
+.message-container {
+    display: flex;
+    flex-direction: column; 
+    margin-bottom: 24px; 
+    flex-grow: 0;
+    flex-shrink: 0; 
+}
+
+.user-message-container {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+
+.bot-message-container {
+    align-self: flex-start; 
+    align-items: flex-start;
+}
+
+.model-name-box {
+    background: #f6f8f9;
+    padding: 5px 10px;
+    border-radius: 5px 5px 0 0;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+    border: 2px solid white;
+    display: inline-block;
+    margin-bottom: 0px;
+    z-index: 1;
+    color: rgb(55, 67, 74);
+    box-sizing: border-box;
+    max-width: 100%;
+}
+
+.model-name-text {
+    font-family: "Huninn", sans-serif;
+    font-weight: 1000;
+    font-style: normal;
+    letter-spacing: 1px;
+    margin: 0;
+    padding: 0;
+}
+
+.bot-message {
+    border-top-left-radius: 0;
+    max-width: 70%;
+    position: relative;
+    top: -2px; 
+    margin: 0; 
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border: 4px solid rgba(255, 255, 255, 0.833);
+    border-top: 4px solid #51cfda;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 10px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.input-area-m
+{
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100% ;
+    padding: 20px;
+    display: flex; 
+    justify-content: center;
+    align-items: flex-end;
+    background-image: radial-gradient(circle at center 200%, rgba(245, 255, 255, 0.9), rgba(123, 202, 255, 0.1));
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1), 0 0 20px rgba(118, 138, 208, 0.15);
+    z-index: 5;
+    transition: left 0.3s ease, width 0.3s ease, transform 0.3s ease;
+}
+
+.main-content-m {
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    padding-bottom: 100px; 
+    scrollbar-width: thin;             
+    scrollbar-color: #ccc transparent; 
+    overflow-x: hidden;
+}
+
+.main-content-m.show
+{
+    margin-left: 285px; 
+}
+
+.main-content-m::-webkit-scrollbar {
+    width: 8px;
+}
+.main-content-m::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+.main-content-m::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+    
+.input-container-m
+{
+    display: flex;
+    width: 65%;
+    min-height: 52px;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.input-container-m input,
+.input-container-m textarea
+{
+    width: 100%;  
+    padding: 10px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+        
+.input-container-m button {
+    position: absolute;
+    right: 10px; 
+    top: 50%;     
+    transform: translateY(-50%);  
+    padding: 8px 16px;
+    border: none;
+    background-color: rgb(102, 153, 177);
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.input-container-m button:hover {
+    background-color: rgb(49, 106, 113);
+}
+
+.input-container-m 
+{
+    transition: margin-left 0.3s ease;
+}
+
+.main-content-m
+{
+    transition: margin-left 0.3s ease;
+    margin-left: 0;
+    z-index: 1;
+
+}
+
+/* 文字框吃滿寬度 */
+.input-container-m #message {
+    flex: 1 1 auto;
+}
+
+/* 語音按鈕樣式 */
+.voice-btn {
+    margin-right: 50px; 
+    width: 40px;
+    height: 40px;
+    border: 1px solid #d0d5dd;
+    background: #f7f7f9;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    transition: all .15s ease;
+}
+.voice-btn:hover { background: rgb(49, 106, 113); }
+
+/* 錄音中狀態 */
+.voice-btn.listening {
+    background: #add8d0;
+    border-color: #146c76;
+    color: #146c76;
+    box-shadow: 0 0 0 3px rgba(3, 88, 109, 0.15);
+}
+
+/* 不支援瀏覽器時 */
+.voice-btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+     
+.profile {
+    text-align: center;
+    margin-bottom: 20px;
+}
+        
+.avatar {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+        
+#hamburger-menu {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: 38px;
+    height: 38px;
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 4px;
+    z-index: 9999; 
+}
+
+.hamburger-line {
+    width: 70%;
+    height: 3px;
+    background: white;
+    margin: 3px 0;
+}
+
+.message-duration {
+    font-size: 0.9em; /* 字體變小 */
+    color: #ffffffeb; /* 顏色變淺 */
+    text-align: right; /* 靠右對齊 */
+    margin-top: 8px; /* 與上方訊息保持距離 */
+    animation: fadeIn 0.5s ease-in-out; /* 套用淡入動畫 */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.137); /* 新增陰影效果 */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.image-gallery {
+    display: flex; /* 使用 Flexbox */
+    overflow-x: auto; /* 啟用橫向滾動 */
+    gap: 10px; /* 設定圖片之間的間距 */
+    padding-top: 10px; /* 在圖片上方新增一些間距 */
+    padding-bottom: 10px; /* 在圖片下方新增一些間距 */
+    /* 讓整個圖庫看起來像一個卷軸容器 */
+    border-radius: 4px;
+    max-width: 70%;
+    
+}
+
+.image-gallery img {
+    max-height: 300px; /* 設定圖片的最大高度，你可以調整這個值 */
+    width: auto; /* 保持圖片的原始比例 */
+    border-radius: 4px; /* 圓角效果 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 新增陰影效果 */
+    border: 1px solid white;
+    transition: transform 0.3s ease; /* 新增過渡效果 */
+    cursor: pointer; /* 顯示滑鼠游標為手指 */
+}
+.image-gallery a {
+    flex-shrink: 0; /* 確保圖片連結不會被壓縮 */
+    display: block;
+}
+
+.image-gallery::-webkit-scrollbar-thumb {
+    background-color: #ccc; /* 滾動條的顏色 */
+    border-radius: 2px;
+    margin-top: 8px;
+}
+
+.image-gallery::-webkit-scrollbar-track {
+    background: transparent; /* 滾動條軌道的顏色 */
+}
+
+/* chat.css */
+
+/* 圖片模態視窗覆蓋層 */
+.image-modal-overlay {
+    display: none; /* 預設隱藏 */
+    position: fixed;
+    z-index: 1000; /* 確保它在最上層 */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.9); /* 半透明黑色背景 */
+    align-items: center;
+    justify-content: center;
+}
+
+/* 關閉按鈕 */
+.image-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.image-modal-close:hover,
+.image-modal-close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* 模態視窗內的圖片 */
+.image-modal-content {
+    margin: auto;
+    display: block;
+    max-width: 90%;
+    max-height: 90%;
+}
+
+.empty-chat-placeholder {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 120px);
+    text-align: center;
+    color: #777;
+}
+
+.empty-chat-placeholder img.empty-chat-image {
+    max-width: 1200px;
+    height: auto;
+    margin-bottom: -320px;
+    filter: drop-shadow(0 0 4px rgba(221, 221, 221, 0.15));
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/* === 響應式設計：平板與手機 === */
+
+
+/* 平板 (≤ 1024px) */
+@media (max-width: 1024px) {
+    .chat-box {
+        width: 85%;
+        margin: 120px auto;
+        font-size: 16px;
+    }
+
+
+    .input-container-m {
+        width: 80%;
+    }
+}
+
+
+/* 手機 (≤ 768px) */
+@media (max-width: 768px) {
+    body {
+        overflow: auto; /* 手機允許滾動 */
+    }
+
+
+    .chat-box {
+        width: 95%;
+        margin: 100px auto 120px auto;
+        font-size: 15px;
+        padding: 20px;
+        gap: 16px;
+    }
+
+
+    .message {
+        font-size: 15px;
+        padding: 10px 8px;
+        max-width: 90%;
+    }
+
+
+    .bot-message, .user-message {
+        max-width: 90%;
+    }
+
+
+    .image-gallery {
+        max-width: 100%;
+    }
+
+
+    .input-area-m {
+        padding: 12px;
+        bottom: 0;
+        left: 0;
+        transform: none;
+        border-radius: 0;
+    }
+
+
+    .input-container-m {
+        width: 95%;
+    }
+
+
+    .input-container-m input,
+    .input-container-m textarea {
+        font-size: 14px;
+    }
+
+
+    .input-container-m button {
+        padding: 6px 10px;
+        right: 6px;
+        margin-left: 30px;
+    }
+
+
+    .voice-btn {
+        margin-right: 40px;
+        width: 36px;
+        height: 36px;
+    }
+
+
+    #hamburger-menu {
+        top: 8px;
+        left: 8px;
+        width: 34px;
+        height: 34px;
+    }
+
+
+    .hamburger-line {
+        height: 2px;
+    }
+}

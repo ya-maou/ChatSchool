@@ -1,0 +1,167 @@
+import os
+import json
+from time import time
+from typing import Tuple, List, Dict
+from dotenv import load_dotenv
+import psycopg2
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain.chat_models import init_chat_model
+from langchain_core.prompts import PromptTemplate
+from module_CAG import ask_cag as CAG
+from module_output import ask_rag_key
+
+# ===【載入環境變數】===
+load_dotenv()
+
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+POSTGRES_CONNECTION_STRING = os.getenv("POSTGRES_CONN_STR")
+
+if not GOOGLE_API_KEY:
+  raise ValueError("請在 .env 設定 GOOGLE_API_KEY")
+if not POSTGRES_CONNECTION_STRING:
+  raise ValueError("請在 .env 設定 POSTGRES_CONN_STR")
+
+# ===【初始化模型】===
+llm = init_chat_model(model="gemini-2.0-flash", model_provider="google_genai")
+embedding_model = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
+
+# ===【知識庫設定 (用於原有 RAG，這裡不影響測試)】===
+CAG_CONTEXT_FILE = "/home/user/Studio/114-FinalProject-TeamB/CS_Project/module_slef/cag_context.txt"
+CAG_KNOWLEDGE_TEXT = ""
+
+# ===【資料庫工具】===
+def get_pg_connection():
+ """建立 PostgreSQL 連線"""
+ # LangChain 的 DB 連線字串通常是 'postgresql+psycopg2://' 開頭，但 psycopg2 只接受 'postgresql://'
+ conn_str = POSTGRES_CONNECTION_STRING.replace("postgresql+psycopg2://", "postgresql://")
+ return psycopg2.connect(conn_str)
+
+def get_random_article_from_pg() -> str:
+    """
+    從 PostgreSQL 資料庫中隨機取出一個文章內容，使用 OFFSET/COUNT 方法確保隨機性。
+
+    注意：此處假設存在 'documents' 表格，且包含 'content' 欄位。
+    """
+    # 使用 OFFSET/COUNT 方法，這比單純 ORDER BY RANDOM() 更有可能確保隨機性
+    query = """
+    SELECT content 
+    FROM documents 
+    OFFSET floor(random() * (SELECT COUNT(*) FROM documents)) 
+    LIMIT 1;
+    """
+    
+    try:
+        conn = get_pg_connection()
+        cur = conn.cursor()
+        cur.execute(query)
+        result = cur.fetchone()
+        cur.close()
+        conn.close()
+        
+        if result and result[0]:
+            # 為了驗證，我們也輸出文章長度或片段，以確認內容確實不同
+            print(f"[DB] 成功從資料庫隨機檢索文章 (長度: {len(result[0])})。")
+            return result[0]
+        
+    except psycopg2.Error as e:
+        # 如果 'documents' 表格不存在，會拋出錯誤，這時使用備用文章
+        print(f"[DB ERROR] PostgreSQL 查詢失敗：{e}")
+        # 提供一個假的文章內容作為備用
+        return """
+        聯合大學的行政單位包含教務處、學務處和總務處。教務處負責課程註冊與學籍管理，
+        學務處負責學生社團與生活輔導，而總務處則處理校園設施的維護和採購。
+        各單位辦公時間為平日上午八點至下午五點。
+        """
+        
+    return "Not Found: 資料庫中找不到任何文章內容。"
+
+# ... (其餘程式碼，如生成多個問題的測試函數，保持不變)
+
+# ===【Prompt 模板：用於生成問題】===
+QUESTION_GENERATION_PROMPT = PromptTemplate.from_template("""
+你是一個專業的測驗出題專家。請根據下方提供的文章內容，**生成一個與內容相關且需要閱讀文章才能回答的問題**。
+請確保問題簡潔且明確。不要說多餘的話，只需要輸出問題本身。
+
+**【文章內容】**
+------------------------------------------------
+{article}
+------------------------------------------------
+
+**【你生成的單一問題】**
+""")
+
+# ===【單次問題生成測試】===
+def generate_single_question_test():
+    """
+    執行單次流程：隨機文章 -> LLM 生成問題。
+    """
+    print("\n=== 啟動單次文章 -> LLM 問題生成測試 ===")
+    
+    # Step 1: 隨機獲取文章
+    article = get_random_article_from_pg()
+    
+    print("\n--- 原始文章內容 ---")
+    print(article[:200] + "..." if len(article) > 200 else article)
+    print("----------------------")
+    
+    if article.startswith("Not Found") or article.startswith("聯合大學的行政單位"):
+        print("[WARNING] 使用備用/假文章或未找到文章，無法進行有效的 LLM 測試。")
+        if article.startswith("Not Found"):
+            return
+
+    # Step 2: 根據文章生成一個問題
+    full_prompt = QUESTION_GENERATION_PROMPT.invoke({"article": article}).text.strip()
+    
+    start_time = time()
+    try:
+        response = llm.invoke(full_prompt)
+        question = response.content.strip()
+        duration = time() - start_time
+        
+        print("\n--- LLM 生成結果 ---")
+        print(f"耗時: {duration:.3f} 秒")
+        print(f"生成的單一問題: **{question}**")
+        print("----------------------")
+
+    except Exception as e:
+        print(f"\n[ERROR] Gemini API 呼叫失敗，無法生成問題：{e}")
+ 
+def run_rag_test_and_time(test_question: str):
+    """
+    對 RAG 系統執行單次問答，並計算總耗時。
+    """
+    print("==========================================")
+    print(f"提問: {test_question}")
+    
+    # --- 開始計時 ---
+    start_time = time.time()
+    
+    # 呼叫您的 RAG 模組的入口函數
+    try:
+        answer = ask_rag_key(test_question)
+        
+        # --- 結束計時 ---
+        end_time = time.time()
+        duration = end_time - start_time
+        
+        print("\n【RAG 流程執行結果】")
+        print(f"回答摘要: {answer[:100]}...")
+        print("------------------------------------------")
+        print(f"✅ 總回答生成耗時: {duration:.3f} 秒")
+        
+    except Exception as e:
+        duration = -1
+        print(f"❌ RAG 流程執行失敗，錯誤: {e}")
+        
+    print("==========================================")
+    return duration
+   
+
+# ===【腳本主執行區塊】===
+if __name__ == "__main__":
+    # 這裡不需要初始化 RAG 知識庫，因為我們只做問題生成測試
+    
+    # 執行單次問題生成測試
+    question=generate_single_question_test()
+    duration = run_rag_test_and_time(question)
+    CAG(question)

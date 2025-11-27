@@ -1,0 +1,162 @@
+{% extends 'sidebar.html' %}
+{% load static %}
+
+{% block title %}行事曆 | ChatSchool{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/chatHistory.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+{% endblock %}
+
+{% block sidebar_main_content %}
+    <div>
+        <div class="chat-history-header">
+            <h4 class="chat-history-title">Main Event</h4>
+            <button class="add-chat-btn" onclick="showCreateModal(new Date().toISOString().split('T')[0])">+</button>
+        </div>
+        <div class="chat-history" id="main-event-list">
+            <div class="chat-entry">
+                <a href="#" class="event-entry-link">載入事件中...</a>
+            </div>
+        </div>
+    </div>
+    <div style="margin-top: 20px;">
+        <div class="chat-history-header">
+            <h4 class="chat-history-title">我的事件</h4>
+            <button class="add-chat-btn" onclick="showCreateModal(new Date().toISOString().split('T')[0])">+</button>
+        </div>
+        <div class="chat-history" id="user-event-list">
+            <div class="chat-entry">
+                <a href="#" class="event-entry-link">載入中...</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="calendar-wrapper w-100" style="max-width: 1400px;">
+        <div class="text-center mb-3">
+            <button id="prev-month" class="btn btn-outline-secondary btn-sm me-2">
+                <i class="bi bi-chevron-left"></i> 
+            </button>
+            <span id="calendar-title" class="fw-bold mx-2">載入中...</span>
+            <button id="next-month" class="btn btn-outline-secondary btn-sm ms-2">
+                 <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered text-center align-middle mb-0">
+                <thead class="table-danger">
+                    <tr>
+                        <th class="weekend">日</th><th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th class="weekend">六</th>
+                    </tr>
+                </thead>
+                <tbody id="calendar-body"></tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block modals %}
+    <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalLabel">事件內容</h5>
+                </div>
+                <div class="modal-body" id="eventModalBody">
+                    <p>載入中...</p>
+                </div>
+            </div>
+            <div class="modal-actions-outside" id="eventModalActions" aria-hidden="true"></div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="createEventModal" tabindex="-1" aria-labelledby="createEventModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-custom-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createEventModalLabel">新增事件</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="create-event-form">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="createEventTitle" class="form-label">事件標題</label>
+                            <input type="text" class="form-control" id="createEventTitle" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="createEventDate" class="form-label">日期</label>
+                            <input type="date" class="form-control" id="createEventDate" name="date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="createEventDescription" class="form-label">詳細內容</label>
+                            <textarea class="form-control" id="createEventDescription" name="description" rows="3"></textarea>
+                        </div>
+                        </form>
+                </div>
+            </div>
+            <div class="modal-actions-outside" id="createModalActions" aria-hidden="true"></div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-custom-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editEventModalLabel">修改事件</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-event-form">
+                        {% csrf_token %}
+                        <input type="hidden" id="editEventId" name="id">
+                        <div class="mb-3">
+                            <label for="editEventTitle" class="form-label">事件標題</label>
+                            <input type="text" class="form-control" id="editEventTitle" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editEventDate" class="form-label">日期</label>
+                            <input type="date" class="form-control" id="editEventDate" name="date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editEventDescription" class="form-label">詳細內容</label>
+                            <textarea class="form-control" id="editEventDescription" name="description" rows="3"></textarea>
+                        </div>
+                        </form>
+                </div>
+            </div>
+            <div class="modal-actions-outside" id="editModalActions" aria-hidden="true"></div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="setReminderModal" tabindex="-1" aria-labelledby="setReminderModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="setReminderModalLabel">設定提醒</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="set-reminder-form">
+                        {% csrf_token %}
+                        <input type="hidden" id="reminderEventId">
+                        <input type="hidden" id="reminderIsUserEvent">
+                        <div class="mb-3">
+                            <label for="reminderDateTime" class="form-label">提醒時間</label>
+                            <input type="datetime-local" class="form-control" id="reminderDateTime" name="reminder_time" required>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">設定</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/calendar.js' %}"></script>
+{% endblock %}

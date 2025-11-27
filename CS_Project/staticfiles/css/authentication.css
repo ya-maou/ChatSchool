@@ -1,0 +1,84 @@
+/* Modal 背景 */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 3000;
+}
+
+/* Modal 內容 */
+.modal-content-login {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px 30px;
+    border-radius: 8px;
+    width: 300px;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 關閉按鈕 */
+.close-btn {
+    position: absolute;
+    right: 12px;
+    top: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* 表單樣式 */
+#login-form input {
+    width: 100%;
+    padding: 8px;
+    margin: 6px 0;
+    box-sizing: border-box;
+}
+#login-form button {
+    width: 100%;
+    padding: 8px;
+    margin-top: 10px;
+    background-color: #3a8c91;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#login-form button:hover {
+    background-color: #074c50;
+}
+
+/* authentication.css */
+
+/* 調整容器讓內容對齊 */
+.code-container {
+    display: flex; /* 使用 Flexbox 布局 */
+    align-items: center; /* 垂直置中對齊 */
+    gap: 10px; /* 輸入框與按鈕之間的間距 */
+}
+
+/* 確保驗證碼輸入框能填滿空間 */
+#verification_code {
+    flex: 1; /* 讓輸入框填滿剩餘空間 */
+}
+
+/* 覆蓋掉 #login-form button 的樣式，並調整為圖示按鈕 */
+#login-form #send-code-btn {
+    width: auto; /* 移除 100% 寬度限制，讓按鈕只佔據所需空間 */
+    padding: 8px 12px; /* 增加內邊距 */
+    background-color: #3a8c91; /* 按鈕背景色 */
+    color: white; /* 圖示顏色 */
+    border: none; /* 移除邊框 */
+    border-radius: 5px; /* 圓角 */
+    cursor: pointer; /* 滑鼠移上時顯示指標 */
+    font-size: 1.2rem; /* 圖示大小 */
+    transition: background-color 0.2s; /* 平滑過渡效果 */
+    margin-top: 0px;
+}
+
+#login-form #send-code-btn:hover {
+    background-color: #005561; /* 懸停時的背景色 */
+}
